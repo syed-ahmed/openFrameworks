@@ -63,16 +63,6 @@ PLATFORM_CFLAGS += -ftree-vectorize
 PLATFORM_CFLAGS += -Wno-psabi
 PLATFORM_CFLAGS += -pipe
 
-PLATFORM_CFLAGS += -I/usr/include/cairo
-PLATFORM_CFLAGS += -I/usr/include/gstreamer-0.10
-PLATFORM_CFLAGS += -I/usr/include/glib-2.0
-PLATFORM_CFLAGS += -I/usr/lib/aarch64-linux-gnu/glib-2.0/include
-PLATFORM_CFLAGS += -I/usr/include/gtk-3.0
-PLATFORM_CFLAGS += -I/usr/include/pango-1.0
-PLATFORM_CFLAGS += -I/usr/include/gdk-pixbuf-2.0
-PLATFORM_CFLAGS += -I/usr/include/atk-1.0
-PLATFORM_CFLAGS += -I/usr/include/freetype2
-
 ################################################################################
 # PLATFORM LIBRARIES
 # These are library names/paths that are platform specific and are specified
@@ -97,25 +87,33 @@ PLATFORM_PKG_CONFIG_LIBRARIES += glu
 PLATFORM_PKG_CONFIG_LIBRARIES += glew
 
 ifeq ($(CROSS_COMPILING),1)
-	GCC_PREFIX=aarch64-linux-gnu
-    PLATFORM_CXX = $(GCC_PREFIX)-g++
-	PLATFORM_CC = $(GCC_PREFIX)-gcc
-	PLATFORM_AR = $(GCC_PREFIX)-ar
-	PLATFORM_LD = $(GCC_PREFIX)-ld
+	ifdef TOOLCHAIN_ROOT
+		#You have specified TOOLCHAIN_ROOT with an environment variable
+	else
+		TOOLCHAIN_ROOT = /opt/cross/bin
+	endif
+	
+	ifdef GCC_PREFIX
+		#You have specified GCC_PREFIX with an environment variable
+	else
+		GCC_PREFIX=aarch64-linux-gnu
+	endif
+	
+    PLATFORM_CXX = $(TOOLCHAIN_ROOT)/$(GCC_PREFIX)-g++
+	PLATFORM_CC = $(TOOLCHAIN_ROOT)/$(GCC_PREFIX)-gcc
+	PLATFORM_AR = $(TOOLCHAIN_ROOT)/$(GCC_PREFIX)-ar
+	PLATFORM_LD = $(TOOLCHAIN_ROOT)/$(GCC_PREFIX)-ld
 	
 	# Code Generation Option Flags (http://gcc.gnu.org/onlinedocs/gcc/Code-Gen-Options.html)
 	PLATFORM_CFLAGS += --sysroot=$(SYSROOT)
 	
-	PLATFORM_HEADER_SEARCH_PATHS += $(SYSROOT)/usr/include/c++/4.6/
-	PLATFORM_HEADER_SEARCH_PATHS += $(SYSROOT)/usr/include/c++/4.6/aarch64-linux-gnu
+	PLATFORM_HEADER_SEARCH_PATHS += $(SYSROOT)/usr/include/c++/4.9/
+	PLATFORM_HEADER_SEARCH_PATHS += $(SYSROOT)/usr/lib/$(GCC_PREFIX)
 	
 	PLATFORM_LDFLAGS += --sysroot=$(SYSROOT)
-	PLATFORM_LDFLAGS += -Wl,-rpath-link $(SYSROOT)/usr/lib
-	PLATFORM_LDFLAGS += -Wl,-rpath-link $(SYSROOT)/usr/lib/aarch64-linux-gnu
-	PLATFORM_LDFLAGS += -Wl,-rpath-link $(SYSROOT)/lib
-	PLATFORM_LDFLAGS += -Wl,-rpath-link $(SYSROOT)/lib/aarch64-linux-gnu
-	
+	PLATFORM_LDFLAGS += -Wl,-rpath=$(SYSROOT)/usr/lib/$(GCC_PREFIX) 
+	PLATFORM_LDFLAGS += -Wl,-rpath=$(SYSROOT)/lib/$(GCC_PREFIX)
+
 	PKG_CONFIG_LIBDIR=$(SYSROOT)/usr/lib/pkgconfig:$(SYSROOT)/usr/lib/aarch64-linux-gnu/pkgconfig:$(SYSROOT)/usr/share/pkgconfig
 	
-	PLATFORM_LIBRARIES += dl
 endif

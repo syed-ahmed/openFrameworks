@@ -90,6 +90,8 @@ ifndef PLATFORM_LIB_SUBPATH
             PLATFORM_LIB_SUBPATH=linuxarmv6l
         else ifeq ($(PLATFORM_ARCH),armv7l)
             PLATFORM_LIB_SUBPATH=linuxarmv7l
+        else ifeq ($(PLATFORM_ARCH),aarch64)
+            PLATFORM_LIB_SUBPATH=linuxarmv7l
         else ifeq ($(PLATFORM_ARCH),i386)
             PLATFORM_LIB_SUBPATH=linux
         else ifeq ($(PLATFORM_ARCH),i686)

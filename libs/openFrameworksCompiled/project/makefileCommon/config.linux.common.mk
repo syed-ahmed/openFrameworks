@@ -1,7 +1,7 @@
 ################################################################################
 # CONFIGURE CORE PLATFORM MAKEFILE
-#   This file has linux common rules for all the platforms (x86_64, i386,armv6l 
-#   and armv7l)
+#   This file has linux common rules for all the platforms (x86_64, i386,armv6l, 
+#   armv7l, aarch64)
 #
 ################################################################################
 
@@ -19,6 +19,10 @@ ifeq ($(PLATFORM_ARCH),armv6l)
 endif
 
 ifeq ($(PLATFORM_ARCH),armv7l)
+	LINUX_ARM=1
+endif
+
+ifeq ($(PLATFORM_ARCH),aarch64)
 	LINUX_ARM=1
 endif
 
